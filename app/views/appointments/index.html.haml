@@ -1,1 +1,14 @@
-<%= react_component 'Appointments' %>
+%h1 React Calendar
+
+%h2 Appointments
+
+%h3 Make new appointments
+
+= form_for @appointment do |f|
+  = f.text_field :title
+  = f.text_field :appt_time
+  = f.submit "Make Appointment"
+
+  - @appointments.each do |apt|
+    %h3 apt.title
+    %p apt.appt_time
