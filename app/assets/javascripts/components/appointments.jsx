@@ -1,38 +1,43 @@
 var Appointments = React.createClass({
-  getInitialState: function(){
-    return{
+  getInitialState: function() {
+    return {
       appointments: this.props.appointments,
-      title: 'Team meeting',
-      appt_time: 'Tommorrow at 9am'
+      title: 'Team standup meeting',
+      appt_time: '25 January 2016 9am'
     }
   },
 
-  handleUserInput: function(obj){
-    this.setState(obj)
+  handleUserInput: function(obj) {
+    this.setState(obj);
   },
 
-  handleFormSubmit: function(){
-    var appointment={title: this.state.title, appt_time: this.state.appt_time}
+  handleFormSubmit: function() {
+    var appointment = {title: this.state.title, appt_time: this.state.appt_time};
     $.post('/appointments',
-  {appointment: appointment}).done(function(data){
-    this.addNewAppointment();
-  });
+            {appointment: appointment})
+          .done(function(data) {
+            this.addNewAppointment(data);
+          }.bind(this));
   },
 
-  addNewAppointment: function(){
+  addNewAppointment: function(appointment) {
     var appointments = React.addons.update(this.state.appointments, { $push: [appointment]});
-    this.setState({appointments: appointments})
+    this.setState({
+      appointments: appointments.sort(function(a,b){
+        return new Date(a.appt_time) - new Date(b.appt_time);
+      })
+    });
   },
 
-  render: function(){
+  render: function() {
     return (
       <div>
         <AppointmentForm input_title={this.state.title}
           input_appt_time={this.state.appt_time}
           onUserInput={this.handleUserInput}
-          onFormSubmit={this.handleFormSubmit}/>
+          onFormSubmit={this.handleFormSubmit} />
         <AppointmentsList appointments={this.state.appointments} />
       </div>
     )
   }
-})
+});
